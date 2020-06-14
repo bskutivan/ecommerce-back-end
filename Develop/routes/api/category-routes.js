@@ -19,7 +19,8 @@ router.get('/', (req, res) => {
   })
   .then(dbCategoryData => {
     if(!dbCategoryData) {
-      res.status(404).json({ message: "No categories found!?"})
+      res.status(404).json({ message: "No categories found!?"});
+      return;
     } 
     res.json(dbCategoryData);
     return;
@@ -30,6 +31,31 @@ router.get('/', (req, res) => {
     res.status(500).json(err);
   })
 });
+
+router.get('/:id', (req, res) => {
+  Category.findOne({
+    where: {
+      id: req.params.id
+    },
+    include: {
+      model: Product,
+      attributes: [
+        'id',
+        'product_name',
+        'price',
+        'category_id'
+      ]
+    }
+  })
+  .then(dbCategoryData => {
+    if (!dbCategoryData) {
+      res.status(404).json({ message: "No category found with that ID."});
+      return;
+    }
+    res.json(dbCategoryData);
+    return;
+  })
+})
 
 router.get('/:id', (req, res) => {
   // find one category by its `id` value
